@@ -1,0 +1,177 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Services Section
+--------------------------------------------------------------*/
+.services {
+  padding: 80px 0;
+
+  .intro-content {
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: color-mix(in srgb, var(--accent-color), transparent 90%);
+      color: var(--accent-color);
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      i {
+        font-size: 12px;
+      }
+    }
+
+    .section-heading {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--heading-color);
+      margin-bottom: 1.5rem;
+
+      @media (max-width: 768px) {
+        font-size: 2.2rem;
+      }
+    }
+
+    .section-description {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: color-mix(in srgb, var(--default-color), transparent 20%);
+      margin-bottom: 2rem;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: var(--accent-color);
+      color: var(--contrast-color);
+      padding: 15px 35px;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px color-mix(in srgb, var(--accent-color), transparent 70%);
+
+      &:hover {
+        background: color-mix(in srgb, var(--accent-color), black 10%);
+        color: var(--contrast-color);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px color-mix(in srgb, var(--accent-color), transparent 60%);
+      }
+    }
+  }
+
+  .hero-visual {
+    position: relative;
+
+    img {
+      border-radius: 20px;
+      box-shadow: 0 20px 60px color-mix(in srgb, var(--default-color), transparent 85%);
+    }
+
+    @media (max-width: 991px) {
+      margin-top: 3rem;
+    }
+  }
+
+  .services-grid {
+    .service-card {
+      background: var(--surface-color);
+      padding: 2rem;
+      border-radius: 15px;
+      height: 100%;
+      transition: all 0.3s ease;
+      border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--accent-color);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+
+      &:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px color-mix(in srgb, var(--default-color), transparent 80%);
+
+        &::before {
+          transform: scaleX(1);
+        }
+
+        .card-number span {
+          background: var(--accent-color);
+          color: var(--contrast-color);
+        }
+      }
+
+      .card-number {
+        margin-bottom: 1.5rem;
+
+        span {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 60px;
+          height: 60px;
+          background: color-mix(in srgb, var(--accent-color), transparent 90%);
+          color: var(--accent-color);
+          border-radius: 15px;
+          font-size: 1.5rem;
+          font-weight: 700;
+          transition: all 0.3s ease;
+        }
+      }
+
+      .card-content {
+        .service-title {
+          font-size: 1.3rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          line-height: 1.4;
+
+          a {
+            color: var(--heading-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+
+            &:hover {
+              color: var(--accent-color);
+            }
+          }
+        }
+
+        .service-description {
+          font-size: 0.95rem;
+          line-height: 1.6;
+          color: color-mix(in srgb, var(--default-color), transparent 30%);
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 60px 0;
+
+    .intro-content {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .services-grid {
+      .service-card {
+        padding: 1.5rem;
+      }
+    }
+  }
+}
