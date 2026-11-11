@@ -203,13 +203,12 @@
             <div class="col-lg-7" data-aos="fade-left" data-aos-delay="100">
               <div class="contact-form-wrapper">
                 <div class="form-header"><h3>Make Your Introduction</h3><p>Start with a few details. The rest can come later.</p></div>
-                <!-- Add your studio Web3Forms access key before enabling live delivery. -->
-                <form id="bb-talent-web3forms" action="https://api.web3forms.com/submit" method="POST" class="bb-talent-form">
-                  <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
-                  <input type="hidden" name="subject" value="[Breaking Brats] New Talent Inquiry">
-                  <input type="hidden" name="from_name" value="Breaking Brats Website">
+                <!-- Formspark: submissions are routed to the Breaking Brats Applications form. -->
+                <form id="bb-talent-application" action="https://submit-form.com/0Nv4ge7sb" method="POST" class="bb-talent-form" aria-describedby="bb-talent-form-status">
+                  <input type="hidden" name="_email.subject" value="[BREAKING BRATS] Application">
+                  <input type="hidden" name="_email.from" value="Breaking Brats">
                   <input type="hidden" name="form_source" value="breakingbrats.com | talent intake">
-                  <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true">
+                  <input type="checkbox" name="_honeypot" tabindex="-1" autocomplete="off" hidden aria-hidden="true">
                   <div class="row g-3">
                     <div class="col-md-6">
                       <label for="talentName" class="form-label">Name / stage name *</label>
@@ -250,6 +249,7 @@
                   <div class="bb-form-actions d-flex align-items-start flex-wrap gap-3 mt-4">
                     <button type="submit" class="submit-btn" data-track="talent_form_submit"><span>Send Introduction</span><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
                   </div>
+                  <p id="bb-talent-form-status" class="bb-form-status mt-3" role="status" aria-live="polite" aria-atomic="true" hidden></p>
                 </form>
               </div>
             </div>
@@ -297,5 +297,71 @@
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <script src="assets/js/main.js"></script>
+  <!-- Formspark submission handler, scoped to this form only. -->
+  <script>
+    (() => {
+      'use strict';
+
+      const form = document.querySelector('#bb-talent-application');
+      if (!form) return;
+
+      const submitButton = form.querySelector('button[type="submit"]');
+      const status = document.querySelector('#bb-talent-form-status');
+      let submitting = false;
+
+      function showStatus(message) {
+        if (!status) return;
+        status.textContent = message;
+        status.hidden = false;
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (submitting || !form.reportValidity()) return;
+
+        // The hidden checkbox traps automated submissions; never transmit its value.
+        if (form.querySelector('[name="_honeypot"]')?.checked) return;
+
+        const payload = Object.fromEntries(new FormData(form).entries());
+        payload._email = {
+          subject: payload['_email.subject'],
+          from: payload['_email.from']
+        };
+        delete payload['_email.subject'];
+        delete payload['_email.from'];
+        delete payload._honeypot;
+
+        submitting = true;
+        if (submitButton) submitButton.disabled = true;
+        form.setAttribute('aria-busy', 'true');
+        showStatus('Sending your introduction...');
+
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) throw new Error(`Formspark HTTP ${response.status}`);
+
+          form.reset();
+          showStatus('Your introduction has been sent. Thank you!');
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'talent_application_success', { form_name: 'breaking_brats' });
+          }
+        } catch (error) {
+          showStatus('We couldn’t send your introduction. Please try again.');
+        } finally {
+          submitting = false;
+          if (submitButton) submitButton.disabled = false;
+          form.removeAttribute('aria-busy');
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

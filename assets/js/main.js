@@ -1,19 +1,18 @@
 /**
  * Breaking Brats | BootstrapMade Instant adaptation
- * Maintains navigation, dynamic release cards, CTA analytics, and talent intake.
+ * Maintains navigation, dynamic release cards, and CTA analytics.
  *
  * CONFIGURE HERE WHEN READY:
  *  - PREMIUM_URL: public channel's paid account or membership landing page
- *  - FORM_ENDPOINT: HTTPS form handler (Formspree, Cloudflare Worker, etc.)
  *  - RELEASES: only actual, published previews and release URLs
  *
+ * The Formspark talent form submits through the page-scoped handler in index.html.
  * All images are flat assets/img/*.png, no nested image folders.
  */
 (() => {
   'use strict';
 
   const PREMIUM_URL = '';
-  const FORM_ENDPOINT = '';
   const RELEASES = [
     // Uncomment only when a *real* preview or full release is published:
     // {
@@ -154,47 +153,6 @@
     button.innerHTML = 'Unlock Full Access <i class="bi bi-arrow-up-right" aria-hidden="true"></i>';
   }
 
-  function configureForm() {
-    const form = document.querySelector('#talent-form');
-    const submit = document.querySelector('#talent-submit');
-    const status = document.querySelector('#talent-form-status');
-    const endpoint = validLink(FORM_ENDPOINT);
-    if (!form || !submit || !status) return;
-
-    if (!endpoint) {
-      submit.disabled = true;
-      status.textContent = 'Form submissions are not connected yet. Use the email link in the meantime.';
-      return;
-    }
-
-    submit.disabled = false;
-    status.textContent = 'Ready to send. Your introduction goes to the studio intake service.';
-
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      if (!form.reportValidity()) return;
-      if (form.elements['_gotcha']?.value) return;
-      submit.disabled = true;
-      status.textContent = 'Sending your introduction...';
-
-      try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { Accept: 'application/json' }
-        });
-        if (!response.ok) throw new Error(`Submission returned ${response.status}`);
-        form.reset();
-        status.textContent = 'Introduction received. We’ll contact you by email if it is a fit.';
-        track('talent_form_success');
-      } catch {
-        status.textContent = 'We could not confirm your submission. Please use the email link instead.';
-      } finally {
-        submit.disabled = false;
-      }
-    });
-  }
-
   // Delegation catches both static links and release cards created later.
   document.addEventListener('click', (event) => {
     const tracked = event.target.closest('[data-track]');
@@ -231,7 +189,6 @@
     updateScrollspy();
     appendReleaseCards();
     configurePremiumCTA();
-    configureForm();
     if (window.AOS && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       window.AOS.init({ duration: 600, easing: 'ease-in-out', once: true, mirror: false });
     } else {
